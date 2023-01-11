@@ -11,13 +11,15 @@ namespace Asteroids
             get => m_destroyed; 
             set => SetValue(value, ref m_destroyed);
         }
+        
+        private bool m_disabled;
+        public bool Disabled
+        {
+            get => m_disabled; 
+            set => SetValue(value, ref m_disabled);
+        }
     
         private int m_healthPoints;
-        public int HealthPoints
-        {
-            get => m_healthPoints; 
-            set => SetValue(value, ref m_healthPoints);
-        }
 
         public AsteroidScriptableObject AsteroidScriptableObject;
 
@@ -28,10 +30,10 @@ namespace Asteroids
 
         private MouseClicks m_mouseClicks = new MouseClicks();
 
-        private void Start()
+        private void Awake()
         {
-            SetInitialAsteroidValues();
             m_renderer = GetComponent<Renderer>();
+            SetInitialAsteroidValues();
         }
     
         private void OnEnable() => SetInitialAsteroidValues();
@@ -39,7 +41,10 @@ namespace Asteroids
         private void SetInitialAsteroidValues()
         {
             m_lifetime = Random.Range(AsteroidScriptableObject.LifetimeMin, AsteroidScriptableObject.LifetimeMax);
-            HealthPoints = AsteroidScriptableObject.HealthPoints;
+            m_healthPoints = AsteroidScriptableObject.HealthPoints;
+            Disabled = false;
+          
+            SetColor();
         }
 
         private void Update()
@@ -58,9 +63,9 @@ namespace Asteroids
             if (!m_mouseClicks.DoubleMouseClicked) 
                 return;
         
-            HealthPoints--;
+            m_healthPoints--;
 
-            if (HealthPoints == 0)
+            if (m_healthPoints == 0)
             {
                 Destroyed = true;
                 DeactivateAsteroid();
@@ -70,8 +75,13 @@ namespace Asteroids
             SetColor();
         }
     
-        private void SetColor() => m_renderer.material.color = AsteroidHelper.SetColor(HealthPoints);
+        private void SetColor() => m_renderer.material.color = AsteroidHelper.SetColor(m_healthPoints);
         
-        private void  DeactivateAsteroid() => gameObject.SetActive(false);
+        private void  DeactivateAsteroid()
+        {
+            gameObject.SetActive(false);
+            Disabled = true;
+            m_lifetimeCounter = 0;
+        }
     }
 }
