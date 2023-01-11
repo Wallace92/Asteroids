@@ -22,10 +22,8 @@ namespace Asteroids
         }
         
         private MouseClicks m_mouseClicks = new MouseClicks();
+        private AsteroidLifetime m_asteroidLifetime = new AsteroidLifetime();
         private Renderer m_renderer;
-
-        private float m_lifetime;
-        private float m_lifetimeCounter;
 
         private int m_healthPoints;
 
@@ -42,7 +40,7 @@ namespace Asteroids
 
         private void SetInitialAsteroidValues()
         {
-            m_lifetime = Random.Range(AsteroidScriptableObject.LifetimeMin, AsteroidScriptableObject.LifetimeMax);
+            m_asteroidLifetime.m_lifetime = Random.Range(AsteroidScriptableObject.LifetimeMin, AsteroidScriptableObject.LifetimeMax);
             m_healthPoints = AsteroidScriptableObject.HealthPoints;
         }
 
@@ -54,13 +52,11 @@ namespace Asteroids
 
         private void Update()
         {
-            m_lifetimeCounter += Time.deltaTime;
-        
-            if (m_lifetimeCounter >= m_lifetime)
-            {
-                Enabled = false;
-                gameObject.SetActive(false);
-            }
+            if (!m_asteroidLifetime.IsAsteroidAlive) 
+                return;
+            
+            Enabled = false;
+            gameObject.SetActive(false);
         }
     
         private void OnMouseOver()
@@ -85,6 +81,6 @@ namespace Asteroids
     
         private void SetColor() => m_renderer.material.color = AsteroidHelper.SetColor(m_healthPoints);
 
-        private void OnDisable() => m_lifetimeCounter = 0;
+        private void OnDisable() => m_asteroidLifetime.m_lifetimeCounter = 0;
     }
 }
