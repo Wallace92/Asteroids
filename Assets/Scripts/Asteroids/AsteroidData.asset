@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: AsteroidData
   m_EditorClassIdentifier: 
   HealthPoints: 4
-  LifetimeMin: 1
-  LifetimeMax: 3
+  LifetimeMin: 3
+  LifetimeMax: 6
