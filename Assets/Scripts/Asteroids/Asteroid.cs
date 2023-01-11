@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using UnityEngine;
+﻿using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Asteroids
@@ -15,11 +14,11 @@ namespace Asteroids
             set => SetValue(value, ref m_destroyed);
         }
         
-        private bool m_disabled;
-        public bool Disabled
+        private bool m_enabled;
+        public bool Enabled
         {
-            get => m_disabled; 
-            set => SetValue(value, ref m_disabled);
+            get => m_enabled; 
+            set => SetValue(value, ref m_enabled);
         }
         
         private MouseClicks m_mouseClicks = new MouseClicks();
@@ -30,22 +29,27 @@ namespace Asteroids
 
         private int m_healthPoints;
 
-        private void Awake()
+        private void Awake() => m_renderer = GetComponent<Renderer>();
+        private void OnEnable() => ResetAsteroidValues();
+        private void Start() => SetInitialAsteroidValues();
+        
+        private void ResetAsteroidValues()
         {
-            m_renderer = GetComponent<Renderer>();
             SetInitialAsteroidValues();
+            ResetAsteroidProperties();
+            SetColor();
         }
-    
-        private void OnEnable() => SetInitialAsteroidValues();
 
         private void SetInitialAsteroidValues()
         {
             m_lifetime = Random.Range(AsteroidScriptableObject.LifetimeMin, AsteroidScriptableObject.LifetimeMax);
             m_healthPoints = AsteroidScriptableObject.HealthPoints;
-            
-            Disabled = false;
+        }
+
+        private void ResetAsteroidProperties()
+        {
+            Enabled = true;
             Destroyed = false;
-            SetColor();
         }
 
         private void Update()
@@ -53,7 +57,10 @@ namespace Asteroids
             m_lifetimeCounter += Time.deltaTime;
         
             if (m_lifetimeCounter >= m_lifetime)
-                DeactivateAsteroid();
+            {
+                Enabled = false;
+                gameObject.SetActive(false);
+            }
         }
     
         private void OnMouseOver()
@@ -69,7 +76,7 @@ namespace Asteroids
             if (m_healthPoints == 0)
             {
                 Destroyed = true;
-                DeactivateAsteroid();
+                gameObject.SetActive(false);
                 return;
             }
 
@@ -77,18 +84,7 @@ namespace Asteroids
         }
     
         private void SetColor() => m_renderer.material.color = AsteroidHelper.SetColor(m_healthPoints);
-        
-        private void  DeactivateAsteroid()
-        {
-            gameObject.SetActive(false);
-            Disabled = true;
-            m_lifetimeCounter = 0;
-        }
 
-        public void ActivateAsteroid(Vector3 pos)
-        {
-            transform.position = pos;
-            gameObject.SetActive(true);
-        }
+        private void OnDisable() => m_lifetimeCounter = 0;
     }
 }

@@ -8,12 +8,10 @@ namespace Managers
 {
     public class AsteroidManager : Spawner<Asteroid>
     {
-        
         [Header("Asteroid Manager")]
         [Range(2, 8)] 
         public int InitAsterNum;
-
-
+        
         private List<Asteroid> m_asteroids = new List<Asteroid>();
         private GameManager m_gameManager;
 
@@ -54,14 +52,19 @@ namespace Managers
                 case nameof(asteroid.Destroyed):
                     if (asteroid.Destroyed)
                         m_gameManager.Score++;
+                    
+                    if (m_activeAsteroidsNumber < m_minAsterNum)
+                        EnableAsteroids();
+                    
                     break;
-                case nameof(asteroid.Disabled):
+                case nameof(asteroid.Enabled):
                 {
-                    if (!asteroid.Disabled)
+                    if (asteroid.Enabled)
                         return;
                     
                     if (m_activeAsteroidsNumber < m_minAsterNum)
                         EnableAsteroids();
+                    
                     break;
                 }
             }
@@ -72,8 +75,10 @@ namespace Managers
             for (int i = 0; i < m_maxAsterNum - m_activeAsteroidsNumber; i++)
             {
                 var pos = SetRandomPosition();
+                var firstDisabledAsteroid = m_firstDisabledAsteroid;
                 
-                m_firstDisabledAsteroid.ActivateAsteroid(pos);
+                firstDisabledAsteroid.transform.position = pos;
+                firstDisabledAsteroid.gameObject.SetActive(true);
             }
         }
     }
