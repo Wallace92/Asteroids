@@ -1,10 +1,13 @@
-﻿using UnityEngine;
+﻿using System.ComponentModel;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Asteroids
 {
     public class Asteroid : View
     {
+        public AsteroidScriptableObject AsteroidScriptableObject;
+        
         private bool m_destroyed;
         public bool Destroyed
         {
@@ -18,17 +21,14 @@ namespace Asteroids
             get => m_disabled; 
             set => SetValue(value, ref m_disabled);
         }
-    
-        private int m_healthPoints;
-
-        public AsteroidScriptableObject AsteroidScriptableObject;
-
+        
+        private MouseClicks m_mouseClicks = new MouseClicks();
         private Renderer m_renderer;
 
         private float m_lifetime;
         private float m_lifetimeCounter;
 
-        private MouseClicks m_mouseClicks = new MouseClicks();
+        private int m_healthPoints;
 
         private void Awake()
         {
@@ -42,8 +42,9 @@ namespace Asteroids
         {
             m_lifetime = Random.Range(AsteroidScriptableObject.LifetimeMin, AsteroidScriptableObject.LifetimeMax);
             m_healthPoints = AsteroidScriptableObject.HealthPoints;
+            
             Disabled = false;
-          
+            Destroyed = false;
             SetColor();
         }
 
@@ -82,6 +83,12 @@ namespace Asteroids
             gameObject.SetActive(false);
             Disabled = true;
             m_lifetimeCounter = 0;
+        }
+
+        public void ActivateAsteroid(Vector3 pos)
+        {
+            transform.position = pos;
+            gameObject.SetActive(true);
         }
     }
 }

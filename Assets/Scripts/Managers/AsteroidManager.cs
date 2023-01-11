@@ -13,17 +13,18 @@ namespace Managers
         [Range(2, 8)] 
         public int InitAsterNum;
 
+
+        private List<Asteroid> m_asteroids = new List<Asteroid>();
+        private GameManager m_gameManager;
+
         private int m_maxAsterNum = 10;
         private int m_minAsterNum = 5;
-        
-        private GameManager m_gameManager;
-        private List<Asteroid> m_asteroids = new List<Asteroid>();
 
         private int m_activeAsteroidsNumber => m_asteroids
-            .Count(aster => aster.isActiveAndEnabled);
+            .Count(aster => aster.gameObject.activeInHierarchy);
 
         private Asteroid m_firstDisabledAsteroid => m_asteroids
-            .FirstOrDefault(aster => !aster.isActiveAndEnabled);
+            .FirstOrDefault(aster => !aster.gameObject.activeInHierarchy);
 
         private void Awake() => m_gameManager = FindObjectOfType<GameManager>();
 
@@ -33,12 +34,12 @@ namespace Managers
         {
             for (int i = 0; i < m_maxAsterNum; i++)
             {
-                var aster = Spawn(SpawnedPrefab.gameObject);
+                var aster = Spawn(SpawnedPrefab.gameObject, "aster_" + i);
                 aster.PropertyChange += OnPropertyChange;
                 
                 m_asteroids.Add(aster);
                 
-                if (i > m_minAsterNum - 1)
+                if (i > InitAsterNum - 1)
                     aster.gameObject.SetActive(false);
             }
         }
@@ -51,7 +52,8 @@ namespace Managers
             switch (e.PropertyName)
             {
                 case nameof(asteroid.Destroyed):
-                    m_gameManager.Score++;
+                    if (asteroid.Destroyed)
+                        m_gameManager.Score++;
                     break;
                 case nameof(asteroid.Disabled):
                 {
@@ -69,7 +71,9 @@ namespace Managers
         {
             for (int i = 0; i < m_maxAsterNum - m_activeAsteroidsNumber; i++)
             {
-                m_firstDisabledAsteroid.gameObject.SetActive(transform);
+                var pos = SetRandomPosition();
+                
+                m_firstDisabledAsteroid.ActivateAsteroid(pos);
             }
         }
     }

@@ -2,7 +2,7 @@
 
 public class MouseClicks
 {
-    private const float DoubleClickTime = 0.2f;
+    private const float DoubleClickTime = 0.25f;
     private float lastClickTime;
 
     public bool DoubleMouseClicked => DoubleMouseClick();

@@ -16,12 +16,15 @@ public class Spawner<T> : MonoBehaviour
     [SerializeField] protected T SpawnedPrefab;
     [SerializeField] protected SpawnBounds SpawnBounds;
     
-    protected T Spawn(GameObject spawnedPrefab)
+    protected T Spawn(GameObject spawnedPrefab, string name)
     {
-        GameObject go = Instantiate(spawnedPrefab.gameObject, SpawnPos(), Random.rotation);
+        GameObject go = Instantiate(spawnedPrefab.gameObject, SpawnPos(), Random.rotation, transform);
+        go.name = name;
         
         return go.GetComponent<T>();
     }
+
+    protected Vector3 SetRandomPosition() => SpawnPos();
 
     private Vector3 SpawnPos()
     {
