@@ -16,20 +16,17 @@ namespace Managers
         private ScoreManager m_scoreManager;
         private GameManager m_gameManager;
 
-        private int m_maxAsterNum = 10;
-        private int m_minAsterNum = 5;
+        private Asteroid m_firstDisabledAsteroid => m_asteroids
+            .FirstOrDefault(aster => !aster.gameObject.activeInHierarchy);
 
         private int m_activeAsteroidsNumber => m_asteroids
             .Count(aster => aster.gameObject.activeInHierarchy);
 
-        private Asteroid m_firstDisabledAsteroid
-        {
-            get
-            {
-                return m_asteroids
-                    .FirstOrDefault(aster => !aster.gameObject.activeInHierarchy);
-            }
-        }
+        private bool m_spawnAsteroidsCondition => m_activeAsteroidsNumber <= m_minAsterNum;
+        private int m_spawnAsteroidNum => m_maxAsterNum - m_activeAsteroidsNumber;
+
+        private int m_maxAsterNum = 10;
+        private int m_minAsterNum = 5;
 
         private void Awake()
         {
@@ -57,49 +54,35 @@ namespace Managers
             }
         }
 
-        private void DestroyAsteroids()
-        {
-            foreach (var asteroid in m_asteroids)
-            {
-                asteroid.PropertyChange -= OnPropertyChange;
-                Destroy(asteroid.gameObject);
-            }
-
-            m_asteroids.Clear();
-        }
-    
         private void OnPropertyChange(object sender, PropertyChangedEventArgs e)
         {
-            if (sender is GameManager gameManager)
+            switch (sender)
             {
-                OnGameManagerPropertyChanged(e, gameManager);
-                return;
+                case GameManager gameManager:
+                    OnGameManagerPropertyChanged(e, gameManager);
+                    break;
+                case Asteroid asteroid:
+                    OnAsteroidPropertyChanged(e, asteroid);
+                    break;
             }
-            
-            if (sender is not Asteroid asteroid)
-                return;
-            
-            switch (e.PropertyName)
-            {
-                case nameof(asteroid.Destroyed):
-                    if (asteroid.Destroyed)
-                        m_scoreManager.Score++;
+        }
 
-                    if (m_activeAsteroidsNumber <= m_minAsterNum)
-                        EnableAsteroids();
-                    
-                    break;
-                case nameof(asteroid.Enabled):
-                {
-                    if (asteroid.Enabled)
-                        return;
-                    
-                    if (m_activeAsteroidsNumber <= m_minAsterNum)
-                        EnableAsteroids();
-                    
-                    break;
-                }
-            }
+        private void OnAsteroidPropertyChanged(PropertyChangedEventArgs e, Asteroid asteroid)
+        {
+            if (e.PropertyName == nameof(asteroid.Destroyed)) 
+                AsteroidDestroyed(asteroid);
+
+            if (!m_spawnAsteroidsCondition)
+                return;
+            
+            EnableAsteroids();
+        }
+        
+
+        private void AsteroidDestroyed(Asteroid asteroid)
+        {
+            if (asteroid.Destroyed)
+                m_scoreManager.Score++;
         }
 
         private void OnGameManagerPropertyChanged(PropertyChangedEventArgs e, GameManager gameManager)
@@ -111,21 +94,30 @@ namespace Managers
                 DestroyAsteroids();
             else
                 SpawnAsteroidsOnStart();
+        }
 
-            return;
+        private void DestroyAsteroids()
+        {
+            foreach (var asteroid in m_asteroids)
+            {
+                asteroid.PropertyChange -= OnPropertyChange;
+                Destroy(asteroid.gameObject);
+            }
+
+            m_asteroids.Clear();
         }
 
         private void EnableAsteroids()
         {
-            for (int i = 0; i < m_maxAsterNum - m_activeAsteroidsNumber; i++)
+            for (int i = 0; i < m_spawnAsteroidNum; i++)
             {
-                
                 var firstDisabledAsteroid = m_firstDisabledAsteroid;
                 
-                if (m_firstDisabledAsteroid == null)
+                if (firstDisabledAsteroid == null)
                     continue;
                 
                 var pos = SetRandomPosition();
+                
                 firstDisabledAsteroid.transform.position = pos;
                 firstDisabledAsteroid.gameObject.SetActive(true);
             }

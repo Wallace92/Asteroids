@@ -50,6 +50,8 @@ namespace Asteroids
             Destroyed = false;
         }
 
+        private void SetColor() => m_renderer.material.color = AsteroidHelper.SetColor(m_healthPoints);
+
         private void Update()
         {
             if (!m_asteroidLifetime.IsAsteroidAlive) 
@@ -58,7 +60,7 @@ namespace Asteroids
             Enabled = false;
             gameObject.SetActive(false);
         }
-    
+
         private void OnMouseOver()
         {
             if (!Input.GetMouseButtonDown(0)) 
@@ -78,8 +80,6 @@ namespace Asteroids
 
             SetColor();
         }
-    
-        private void SetColor() => m_renderer.material.color = AsteroidHelper.SetColor(m_healthPoints);
 
         private void OnDisable() => m_asteroidLifetime.m_lifetimeCounter = 0;
     }
