@@ -17,7 +17,7 @@ namespace Asteroids
         }
         
         private bool m_enabled;
-        public bool Enabled
+        private bool Enabled
         {
             get => m_enabled; 
             set => SetValue(value, ref m_enabled);
@@ -31,19 +31,19 @@ namespace Asteroids
 
         private void Awake() => m_renderer = GetComponent<Renderer>();
         private void OnEnable() => ResetAsteroidValues();
-        private void Start() => SetInitialAsteroidValues();
+        private void Start() => SetInitialAsteroidValues(AsteroidScriptableObject);
         
         private void ResetAsteroidValues()
         {
-            SetInitialAsteroidValues();
+            SetInitialAsteroidValues(AsteroidScriptableObject);
             ResetAsteroidProperties();
             SetColor();
         }
 
-        private void SetInitialAsteroidValues()
+        private void SetInitialAsteroidValues(AsteroidScriptableObject asterScripObj)
         {
-            m_asteroidLifetime.Lifetime = Random.Range(AsteroidScriptableObject.LifetimeMin, AsteroidScriptableObject.LifetimeMax);
-            m_healthPoints = AsteroidScriptableObject.HealthPoints;
+            m_asteroidLifetime.SetAsteroidLifetime(Random.Range(asterScripObj.LifetimeMin, asterScripObj.LifetimeMax));
+            m_healthPoints = asterScripObj.HealthPoints;
         }
 
         private void ResetAsteroidProperties()
@@ -83,6 +83,6 @@ namespace Asteroids
             SetColor();
         }
 
-        private void OnDisable() => m_asteroidLifetime.LifetimeCounter = 0;
+        private void OnDisable() => m_asteroidLifetime.ResetAsteroidLifetimeCounter();
     }
 }
