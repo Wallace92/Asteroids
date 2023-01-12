@@ -27,26 +27,31 @@ namespace Managers
             VictoryScreen.RepeatBtn.onClick.AddListener(Restart);
         }
 
-        private void Restart()
-        {
-            ScoreTMP.gameObject.SetActive(true);
-            Score = 0;
-            m_gameManager.GameOver = false;
-        }
-
         private void OnPropertyChange(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != nameof(Score))
                 return;
 
-            if (m_score == m_gameManager.GameEndScore)
+            if (Score == m_gameManager.GameEndScore)
             {
-                ScoreTMP.gameObject.SetActive(false);
-                VictoryScreen.Activate();
-                m_gameManager.GameOver = true;
+                SetVisibilityOfScoreTMP(false);
+                ActivateVictoryScreen();
+                SetGameLoop(true);
             }
             
-            ScoreTMP.text = $"Punkty: [{m_score}]";
+            ScoreTMP.text = $"Punkty: [{Score}]";
         }
+
+        private void Restart()
+        {
+            SetVisibilityOfScoreTMP(true);
+            RestartScore();
+            SetGameLoop(false);
+        }
+
+        private void SetVisibilityOfScoreTMP(bool visibility) =>  ScoreTMP.gameObject.SetActive(visibility);
+        private void ActivateVictoryScreen() => VictoryScreen.Activate();
+        private void SetGameLoop(bool isGameOver) =>  m_gameManager.GameOver = isGameOver;
+        private void RestartScore() => Score = 0;
     }
 }
