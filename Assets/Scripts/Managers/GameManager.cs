@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Observer;
+using UnityEngine;
 
 namespace Managers
 {

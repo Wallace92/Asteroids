@@ -1,5 +1,7 @@
 using System.ComponentModel;
+using Observer;
 using TMPro;
+using UI;
 
 namespace Managers
 {

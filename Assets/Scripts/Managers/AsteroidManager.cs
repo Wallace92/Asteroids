@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using Asteroids;
 using UnityEngine;
+using Utils;
 
 namespace Managers
 {
@@ -11,6 +12,11 @@ namespace Managers
         [Header("Asteroid Manager")]
         [Range(2, 8)] 
         public int InitAsterNum;
+        
+        [SerializeField] 
+        private int m_maxAsterNum = 10;
+        [SerializeField] 
+        private int m_minAsterNum = 5;
         
         private List<Asteroid> m_asteroids;
         private ScoreManager m_scoreManager;
@@ -24,10 +30,7 @@ namespace Managers
 
         private bool SpawnAsteroidsCondition => ActiveAsteroidsNumber <= m_minAsterNum;
         private int SpawnAsteroidNum => m_maxAsterNum - ActiveAsteroidsNumber;
-
-        private int m_maxAsterNum = 10;
-        private int m_minAsterNum = 5;
-
+        
         private void Awake()
         {
             m_scoreManager = FindObjectOfType<ScoreManager>();

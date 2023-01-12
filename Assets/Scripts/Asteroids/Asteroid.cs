@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Observer;
+using UnityEngine;
+using Utils;
 using Random = UnityEngine.Random;
 
 namespace Asteroids
@@ -40,7 +42,7 @@ namespace Asteroids
 
         private void SetInitialAsteroidValues()
         {
-            m_asteroidLifetime.m_lifetime = Random.Range(AsteroidScriptableObject.LifetimeMin, AsteroidScriptableObject.LifetimeMax);
+            m_asteroidLifetime.Lifetime = Random.Range(AsteroidScriptableObject.LifetimeMin, AsteroidScriptableObject.LifetimeMax);
             m_healthPoints = AsteroidScriptableObject.HealthPoints;
         }
 
@@ -81,6 +83,6 @@ namespace Asteroids
             SetColor();
         }
 
-        private void OnDisable() => m_asteroidLifetime.m_lifetimeCounter = 0;
+        private void OnDisable() => m_asteroidLifetime.LifetimeCounter = 0;
     }
 }

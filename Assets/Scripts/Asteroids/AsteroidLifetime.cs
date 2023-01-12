@@ -4,16 +4,16 @@ namespace Asteroids
 {
     public class AsteroidLifetime
     {
-        public float m_lifetime;
-        public float m_lifetimeCounter;
+        public float Lifetime;
+        public float LifetimeCounter;
     
         public bool IsAsteroidAlive => AsteroidLifetimeLoop();
 
         private bool AsteroidLifetimeLoop()
         {
-            m_lifetimeCounter += Time.deltaTime;
+            LifetimeCounter += Time.deltaTime;
         
-            return m_lifetimeCounter >= m_lifetime;
+            return LifetimeCounter >= Lifetime;
         }
     }
 }
