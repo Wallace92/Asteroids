@@ -15,7 +15,7 @@ public class View : MonoBehaviour, INotifyPropertyChanged
     }
     
     [NotifyPropertyChangedInvocator]
-    protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChange?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
