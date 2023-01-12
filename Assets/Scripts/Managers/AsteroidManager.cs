@@ -39,22 +39,24 @@ namespace Managers
             m_gameManager.PropertyChange += OnPropertyChange;
         }
 
-        private void Start() => SpawnAsteroids();
+        private void Start() => m_asteroids = SpawnAsteroids(SpawnedPrefab.gameObject, m_maxAsterNum, InitAsterNum);
 
-        private void SpawnAsteroids()
+        private List<Asteroid> SpawnAsteroids(GameObject spawnedPrefabGameObject, int maxAsterNum, int initAsterNum)
         {
-            m_asteroids = new List<Asteroid>();
+            var asteroids = new List<Asteroid>();
             
-            for (int i = 0; i < m_maxAsterNum; i++)
+            for (int i = 0; i < maxAsterNum; i++)
             {
-                var aster = Spawn(SpawnedPrefab.gameObject, "aster_" + i);
+                var aster = Spawn(spawnedPrefabGameObject, "aster_" + i);
                 aster.PropertyChange += OnPropertyChange;
                 
-                m_asteroids.Add(aster);
+                asteroids.Add(aster);
                 
-                if (i > InitAsterNum - 1)
+                if (i > initAsterNum - 1)
                     aster.gameObject.SetActive(false);
             }
+
+            return asteroids;
         }
 
         private void OnPropertyChange(object sender, PropertyChangedEventArgs e)
@@ -103,20 +105,20 @@ namespace Managers
                 return;
 
             if (gameManager.GameOver)
-                DestroyAsteroids();
+                DestroyAsteroids(m_asteroids);
             else
-                SpawnAsteroids();
+                m_asteroids = SpawnAsteroids(SpawnedPrefab.gameObject, m_maxAsterNum, InitAsterNum);;
         }
 
-        private void DestroyAsteroids()
+        private void DestroyAsteroids(List<Asteroid> asteroids)
         {
-            foreach (var asteroid in m_asteroids)
+            foreach (var asteroid in asteroids)
             {
                 asteroid.PropertyChange -= OnPropertyChange;
                 Destroy(asteroid.gameObject);
             }
 
-            m_asteroids.Clear();
+            asteroids.Clear();
         }
     }
 }
